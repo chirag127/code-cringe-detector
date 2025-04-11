@@ -1,26 +1,125 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
+import { CringeScanner } from "./cringeScanner";
+import { DecorationManager } from "./decorations";
+import { CringePanel } from "./panel";
+import { CringeIssue } from "./utils";
 
 // This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+    console.log("Code Cringe Detector is now active!");
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "code-cringe-detector" is now active!');
+    // Create instances of our components
+    const scanner = new CringeScanner(context);
+    const decorationManager = new DecorationManager(context);
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('code-cringe-detector.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Code Cringe Detector!');
-	});
+    // Register the detect cringe command
+    const detectCringeCommand = vscode.commands.registerCommand(
+        "code-cringe-detector.detectCringe",
+        async () => {
+            try {
+                // Scan the current editor
+                const result = await scanner.scanCurrentEditor();
+                if (!result) {
+                    return;
+                }
 
-	context.subscriptions.push(disposable);
+                const { issues, fileUri } = result;
+
+                // Apply decorations
+                decorationManager.applyDecorations(issues, fileUri);
+
+                // Show the panel with results
+                const panel = CringePanel.createOrShow(context);
+                panel.update(issues, fileUri);
+
+                // Show summary message
+                if (issues.length > 0) {
+                    vscode.window.showInformationMessage(
+                        `Found ${issues.length} code cringe issue${
+                            issues.length !== 1 ? "s" : ""
+                        }. Check the panel for details.`
+                    );
+                } else {
+                    vscode.window.showInformationMessage(
+                        "No code cringe detected. Your code is looking good!"
+                    );
+                }
+            } catch (error) {
+                vscode.window.showErrorMessage(
+                    `Error: ${
+                        error instanceof Error ? error.message : String(error)
+                    }`
+                );
+            }
+        }
+    );
+
+    // Register the fix cringe command
+    const fixCringeCommand = vscode.commands.registerCommand(
+        "code-cringe-detector.fixCringe",
+        async (issue: CringeIssue) => {
+            try {
+                // Get fix suggestion
+                const suggestion = await scanner.getFixSuggestion(issue);
+                if (!suggestion) {
+                    return;
+                }
+
+                // Show the suggestion in a new document
+                const document = await vscode.workspace.openTextDocument({
+                    content: suggestion,
+                    language:
+                        vscode.window.activeTextEditor?.document.languageId ||
+                        "text",
+                });
+                vscode.window.showTextDocument(
+                    document,
+                    vscode.ViewColumn.Beside
+                );
+            } catch (error) {
+                vscode.window.showErrorMessage(
+                    `Error: ${
+                        error instanceof Error ? error.message : String(error)
+                    }`
+                );
+            }
+        }
+    );
+
+    // Register the show history command
+    const showHistoryCommand = vscode.commands.registerCommand(
+        "code-cringe-detector.showHistory",
+        () => {
+            try {
+                // Show the panel with history
+                const panel = CringePanel.createOrShow(context);
+                panel.showHistory();
+            } catch (error) {
+                vscode.window.showErrorMessage(
+                    `Error: ${
+                        error instanceof Error ? error.message : String(error)
+                    }`
+                );
+            }
+        }
+    );
+
+    // Add disposables to context
+    context.subscriptions.push(
+        detectCringeCommand,
+        fixCringeCommand,
+        showHistoryCommand
+    );
+
+    // Register a disposable for the decoration manager
+    context.subscriptions.push({
+        dispose: () => {
+            decorationManager.dispose();
+        },
+    });
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+    // Clean up resources
+}

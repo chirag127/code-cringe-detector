@@ -1,136 +1,120 @@
-Sure! Here's a full **Product Requirements Document (PRD)** for idea **#44 – Code Cringe Detector** 🚨😬
+Here's a full **Product Requirements Document (PRD)** for **"Code Cringe Detector"**, your VS Code extension that sassily detects code smells using Gemini 2.0 Flash Lite:
 
 ---
 
-## 🧾 Product Requirements Document (PRD)
-
-### **Product Name:**
-**Code Cringe Detector**
-
----
-
-### **Overview:**
-Code Cringe Detector is a VS Code extension that identifies "cringeworthy" code patterns — not just from a technical correctness point of view, but from a **developer empathy + clean code perspective**. It humorously flags overly complex, outdated, or just plain awkward code with witty messages that both entertain and educate developers.
+## 📝 Product Requirements Document (PRD)
+**Project Name:** Code Cringe Detector
+**Type:** VS Code Extension + Express.js Backend
+**AI Model:** Gemini 2.0 Flash Lite
+**Purpose:**
+Help developers write cleaner code by detecting bad practices and code smells using a humorous, sarcastic tone — making refactoring more engaging and fun.
 
 ---
 
-### **Problem Statement:**
-Developers often write or inherit messy, over-engineered, or outdated code patterns. Static analyzers are too formal or dry, and don’t encourage developers to clean up unless they're forced to. There’s a lack of lightweight, fun, real-time feedback tools that promote cleaner code in a **non-judgmental, humorous** way.
+### 🎯 Goals
+- Detect bad patterns (e.g., long functions, deeply nested blocks, vague variable names).
+- Display results with **sass/humor** (e.g., “300 lines in one function? Bold move, champ.”).
+- Highlight inline results in the editor.
+- Optionally fix issues or suggest refactors.
+- Store history of past cringes detected for later viewing.
 
 ---
 
-### **Goals & Objectives:**
+### 🧠 Core Features
 
-| Goal | Metric |
-|------|--------|
-| Encourage better code hygiene | 80% of flagged issues are resolved by user |
-| Increase developer engagement | Extension is used for >10 sessions per user on average |
-| Make code reviews easier | Reduce occurrences of low-hanging cleanup comments |
-
----
-
-### **Target Audience:**
-- Solo developers
-- Dev teams (especially juniors & mid-level)
-- Code reviewers
-- Educators
+| Feature | Description |
+|--------|-------------|
+| **1. AI Code Review** | Sends selected code snippets or open file to backend for analysis using Gemini 2.0 Flash Lite. |
+| **2. Cringe Detection Engine** | Identifies: long functions, bad naming, excessive nesting, lack of comments, duplicate code. |
+| **3. Sassy Feedback** | Displays AI output as witty/snarky comments inline and in a sidebar panel. |
+| **4. Inline Decorations** | Highlights smelly code with humorous hover text or warnings. |
+| **5. Sidebar Panel** | Lists all “cringes” in the current file with jump-to-line functionality. |
+| **6. Fix Suggestions (optional)** | Suggests better code via Gemini 2.0 with user confirmation. |
+| **7. History Log** | Tracks last 10 scans per file. “The Hall of Shame.” |
 
 ---
 
-### **Core Features:**
+### 🏗️ Technical Architecture
 
-#### 🧠 Static Code Pattern Detection
-Detect and flag:
-- Long functions (>50 lines)
-- Deeply nested logic (>3 levels)
-- Overuse of comments in lieu of clean code
-- Non-descriptive names (`x`, `foo`, `data2`)
-- Excessive parameters (>4 in a function)
-- Mixing of camelCase, snake_case, kebab-case
-- Magic numbers
-- Copy-pasta detection (duplicated code)
+#### 🧩 Extension Structure (VS Code)
+```
+/src
+  |-- extension.ts         # Main activation point
+  |-- cringeScanner.ts     # Sends code to backend
+  |-- decorations.ts       # Inline highlights/snarky messages
+  |-- panel.ts             # Webview for sidebar
+  |-- utils.ts             # Helper functions
+```
 
-#### 💬 Humorous Inline Feedback
-- Hover tooltips and squiggly underlines give feedback like:
-  - “Did you really just name this function `doStuff()`?”
-  - “Wow. Nested deeper than Inception.”
-  - “I see you've summoned the dark magic of global state.”
-  - “This function is longer than your last relationship.”
+#### 🖥️ Backend (Express.js)
+```
+/backend
+  |-- server.js            # Express.js server
+  |-- routes/
+        |-- analyze.js     # Route to handle cringe detection
+  |-- services/
+        |-- gemini.js      # Gemini 2.0 Flash Lite API interaction
+  |-- utils/
+        |-- parser.js      # Code chunking/analysis helpers
+```
 
-#### 🧩 Cringe Severity Score
-- Each file gets a “Cringe Score” (0–100)
-- Color-coded bar in status bar
-  - 0–30: Zen ✨
-  - 30–70: Uh-oh 😬
-  - 70–100: Make it stop 🚨
-
-#### 📘 Code Cleanup Suggestions
-- Suggestions shown in hover or quick-fix (`Cmd+.`):
-  - Rename variables
-  - Extract method
-  - Convert magic numbers to constants
-  - Split large functions
-  - Refactor repeated logic into utilities
-
-#### 📊 Dashboard (Optional)
-- Shows top cringe offenders across the project
-- Trends: Is code getting better or worse?
-- Leaderboard (opt-in): Who wrote the cringiest code this week?
+#### 🔌 Communication
+- Extension makes a `POST /analyze` request to backend with file contents.
+- Backend uses Gemini 2.0 Flash Lite API to detect code smells.
+- Returns annotated feedback with location, type of issue, and snarky comment.
 
 ---
 
-### **User Stories:**
-
-#### Developer
-> As a developer, I want real-time, friendly feedback on bad code habits so I can improve my code without feeling overwhelmed or judged.
-
-#### Team Lead
-> As a team lead, I want my team to get code quality nudges without needing to micromanage or leave nitpicky PR comments.
-
-#### Educator
-> As a teacher, I want my students to learn good code practices in a way that's engaging and fun.
-
----
-
-### **Tech Stack:**
-
-| Component | Tech |
-|----------|------|
-| Extension Framework | VS Code Extension API (TypeScript) |
-| Analysis Engine | ESLint rules + Custom static checks |
-| Humor Engine | Rule-to-joke mapping JSON / AI for future |
-| UI | Inline decorations, status bar, hover popups |
+### 💡 Example Output
+```json
+{
+  "issues": [
+    {
+      "line": 42,
+      "issue": "Function is 150 lines long",
+      "snark": "Oof. This function's got more chapters than War & Peace."
+    },
+    {
+      "line": 17,
+      "issue": "Variable name 'x' is too vague",
+      "snark": "'x'? Seriously? This isn’t algebra class."
+    }
+  ]
+}
+```
 
 ---
 
-### **Non-Goals:**
-- It won’t auto-fix all problems (focus is awareness + education).
-- It’s not meant to replace formal linters (but can complement them).
-- No judgment on functional correctness — only style, smell, and readability.
+### 🎨 UX Flow
+
+1. **User Action:** Right-click > “Run Cringe Detector”
+2. **Result:** Inline snarky decorations + sidebar results
+3. **Optional:** Click “Fix It” to receive Gemini-generated suggestions
+4. **Log:** User can open past detection logs from command palette
 
 ---
 
-### **Milestones:**
+### 📦 VS Code Marketplace Metadata
 
-| Phase | Tasks |
+| Field | Value |
 |-------|-------|
-| ✅ v1.0 MVP | Detect top 5 cringe patterns, hover messages, Cringe Score |
-| 🚧 v1.1 | More rules, customizable severity, optional humor toggle |
-| 🔜 v2.0 | Dashboard, team stats, AI-generated jokes |
+| Extension ID | `code-cringe-detector` |
+| Display Name | Code Cringe Detector |
+| Description | Sassy, AI-powered code smell detector with a flair for drama. |
+| Category | Linting / AI Dev Tools |
+| Author | You |
+| Activation | On command: `Run Cringe Detector` |
 
 ---
 
-### **Success Criteria:**
-- 1000+ downloads in first month
-- 4.5+ rating on VS Code Marketplace
-- 70% positive feedback on usefulness/humor combo
+### 📅 Milestones
+
+| Phase | Deliverables |
+|-------|--------------|
+| Week 1 | Basic Extension UI + Backend setup |
+| Week 2 | Gemini 2.0 integration + Detection logic |
+| Week 3 | Inline decorations + Sidebar panel |
+| Week 4 | Fix suggestions + History log |
+| Week 5 | Testing, Marketplace packaging, polish |
 
 ---
-
-Want me to now:
-- ✅ Build this extension from scratch
-- ✅ Set up GitHub repo and CI
-- ✅ Publish it to the Marketplace
-- ✅ Add a config panel and theme integration
-
-Just say the word and I’ll get started!
