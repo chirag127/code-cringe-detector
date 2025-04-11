@@ -106,7 +106,7 @@ Track your progress with a history of past scans - see how your code quality imp
 
 This extension contributes the following settings:
 
--   `codeCringeDetector.backendUrl`: URL of the Code Cringe Detector backend server (default: http://localhost:3000)
+-   `codeCringeDetector.backendUrl`: URL of the Code Cringe Detector backend server (default: https://code-cringe-detector.onrender.com)
 -   `codeCringeDetector.sassLevel`: How sassy should the feedback be? (mild/medium/savage)
 -   `codeCringeDetector.historySize`: Number of historical scans to keep per file
 

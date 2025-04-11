@@ -37,7 +37,9 @@ export interface CringeAnalysisResult {
 export function getConfiguration(): CringeDetectorConfig {
     const config = vscode.workspace.getConfiguration("codeCringeDetector");
     return {
-        backendUrl: config.get<string>("backendUrl") || "http://localhost:3000",
+        backendUrl:
+            config.get<string>("backendUrl") ||
+            "https://code-cringe-detector.onrender.com",
         sassLevel: (config.get<string>("sassLevel") || "medium") as
             | "mild"
             | "medium"
@@ -117,9 +119,7 @@ export function storeInHistory(
     history.unshift(result);
 
     // Limit history size
-    if (history.length > config.historySize) {
-        history.length = config.historySize;
-    }
+    history.length = Math.min(history.length, config.historySize);
 
     // Save updated history
     context.workspaceState.update(historyKey, history);
@@ -157,7 +157,7 @@ export function getSelectedCode(editor: vscode.TextEditor): {
     code: string;
     startLine: number;
 } {
-    const selection = editor.selection;
+    const {selection} = editor;
 
     if (!selection.isEmpty) {
         // Return selected text

@@ -2,7 +2,7 @@
   "name": "code-cringe-detector",
   "displayName": "Code Cringe Detector",
   "description": "Sassy, AI-powered code smell detector with a flair for drama",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "chiragsinghal",
   "author": {
     "name": "Chirag Singhal"
@@ -58,7 +58,7 @@
       "properties": {
         "codeCringeDetector.backendUrl": {
           "type": "string",
-          "default": "http://localhost:3000",
+          "default": "https://code-cringe-detector.onrender.com",
           "description": "URL of the Code Cringe Detector backend server"
         },
         "codeCringeDetector.sassLevel": {
